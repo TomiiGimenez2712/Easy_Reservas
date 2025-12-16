@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <title>Reserva tu Turno</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { "primary": "#13ec5b" }, fontFamily: { "display": ["Manrope", "sans-serif"] } } } }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-[#f6f8f6] font-display min-h-screen flex flex-col items-center p-4">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <header class="mb-6 border-b border-gray-100 pb-4">
+            <h1 class="text-2xl font-bold text-gray-900">Reservar Turno</h1>
+            <p class="text-sm text-gray-500" id="subtitle">Cargando...</p>
+        </header>
+
+        <div class="mb-8">
+            <label class="text-xs font-bold text-gray-500 uppercase ml-1 mb-3 block">1. Selecciona Servicio</label>
+            <div id="services-container" class="grid grid-cols-1 gap-3">
+                <p class="text-sm text-gray-400 animate-pulse text-center p-4">Cargando servicios...</p>
+            </div>
+        </div>
+
+        <div id="calendar-section" class="hidden opacity-50 transition-all duration-500">
+            <div class="mb-6">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">2. Elige el día</label>
+                <input type="date" id="date-picker" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-primary focus:border-primary" />
+            </div>
+
+            <div id="slots-container" class="grid grid-cols-3 gap-3 mb-8"></div>
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+            <div>
+                <p class="text-xs text-gray-500 uppercase font-bold">Resumen:</p>
+                <p id="seleccion-texto" class="text-sm font-bold text-gray-800">Elige un servicio...</p>
+            </div>
+            <button id="btn-continuar" disabled onclick="window.location.href='datos_cliente.html'" class="bg-gray-300 text-gray-500 px-6 py-3 rounded-full font-bold transition-all shadow-sm">Continuar</button>
+        </div>
+    </div>
+
+    <script>
+        const supabase = window.supabase.createClient(
+            'https://qeuiiwswouxgfnmjfqyq.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFldWlpd3N3b3V4Z2ZubWpmcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzI0NDQsImV4cCI6MjA4MTQwODQ0NH0.rjhBWx61XtA-hMxzFLnOaKr9ybQk3Zbj5hnU0jxXhpw'
+        );
+        
+        const params = new URLSearchParams(window.location.search);
+        const negocioEmail = params.get('negocio') || localStorage.getItem('negocio_destino');
+        let servicioSeleccionado = null;
+
+        if (!negocioEmail) {
+            document.body.innerHTML = "<div class='p-10 text-center text-red-500 font-bold'>Error: Enlace sin negocio.</div>";
+        } else {
+            localStorage.setItem('negocio_destino', negocioEmail);
+            iniciar();
+        }
+
+        async function iniciar() {
+            const { data: config } = await supabase.from('business_settings').select('*').eq('email', negocioEmail).single();
+            
+            if(config?.business_name) document.querySelector('h1').innerText = config.business_name;
+            document.getElementById('subtitle').innerText = "Elige tu servicio ideal";
+
+            const services = config?.services || [{name: "Servicio General", price: ""}];
+            const container = document.getElementById('services-container');
+            container.innerHTML = "";
+
+            services.forEach(srv => {
+                const btn = document.createElement('div');
+                // ESTILOS EN LÍNEA para asegurar que funcionen
+                btn.className = "flex justify-between items-center p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-green-50/50 transition-all cursor-pointer bg-white shadow-sm group";
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="h-5 w-5 rounded-full border-2 border-gray-300 group-hover:border-primary flex items-center justify-center">
+                            <div class="h-2.5 w-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity check-indicator"></div>
+                        </div>
+                        <span class="font-bold text-gray-800 text-sm md:text-base">${srv.name}</span>
+                    </div>
+                    ${srv.price ? `<span class="font-bold text-green-700 bg-green-100 px-3 py-1 rounded-lg text-xs">$${srv.price}</span>` : ''}
+                `;
+                btn.onclick = () => seleccionarServicio(btn, srv);
+                container.appendChild(btn);
+            });
+
+            const datePicker = document.getElementById('date-picker');
+            const hoy = new Date().toISOString().split('T')[0];
+            datePicker.value = hoy;
+            datePicker.min = hoy;
+            datePicker.addEventListener('change', () => cargarHorarios(config));
+        }
+
+        function seleccionarServicio(btn, servicio) {
+            // Reset visual
+            document.querySelectorAll('#services-container > div').forEach(b => {
+                b.className = "flex justify-between items-center p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-green-50/50 transition-all cursor-pointer bg-white shadow-sm group";
+                b.querySelector('.check-indicator').classList.add('opacity-0');
+            });
+            
+            // Activar seleccionado
+            btn.className = "flex justify-between items-center p-4 rounded-xl border-2 border-primary bg-green-50/50 transition-all cursor-pointer shadow-md";
+            btn.querySelector('.check-indicator').classList.remove('opacity-0');
+            
+            servicioSeleccionado = servicio;
+            localStorage.setItem('servicio_seleccionado', JSON.stringify(servicio));
+            
+            const calSection = document.getElementById('calendar-section');
+            calSection.classList.remove('hidden');
+            calSection.classList.remove('opacity-50');
+            calSection.classList.add('opacity-100');
+            
+            document.getElementById('date-picker').dispatchEvent(new Event('change'));
+            actualizarResumen("--:--");
+        }
+
+        async function cargarHorarios(config) {
+            const fecha = document.getElementById('date-picker').value;
+            const container = document.getElementById('slots-container');
+            container.innerHTML = "<p class='col-span-3 text-center text-sm'>Buscando...</p>";
+
+            const duration = config?.slot_duration || 30;
+            const shifts = config?.shifts || [{start: "09:00", end: "18:00"}];
+            const workDays = config?.work_days || [1,2,3,4,5,6];
+
+            const partes = fecha.split('-');
+            const diaSemana = new Date(partes[0], partes[1]-1, partes[2]).getDay();
+            if (!workDays.includes(diaSemana)) {
+                container.innerHTML = `<div class="col-span-3 text-center p-4 bg-gray-50 rounded-xl text-gray-400 text-sm border border-dashed border-gray-200">Cerrado este día.</div>`;
+                return;
+            }
+
+            const { data: reservas } = await supabase.from('bookings').select('booking_time').eq('business_email', negocioEmail).eq('booking_date', fecha);
+            const ocupados = reservas ? reservas.map(r => r.booking_time.slice(0,5)) : [];
+
+            container.innerHTML = "";
+            let slotsTotal = 0;
+
+            shifts.forEach(shift => {
+                const slots = generarIntervalos(shift.start, shift.end, duration);
+                slots.forEach(hora => {
+                    slotsTotal++;
+                    const btn = document.createElement('button');
+                    if (ocupados.includes(hora)) {
+                        btn.className = "py-3 px-2 rounded-xl bg-gray-50 text-gray-300 font-bold line-through cursor-not-allowed text-xs border border-transparent";
+                        btn.innerText = hora;
+                        btn.disabled = true;
+                    } else {
+                        btn.className = "time-btn py-3 px-2 rounded-xl border border-gray-200 font-bold hover:border-primary hover:text-primary bg-white text-gray-800 text-sm transition-all shadow-sm";
+                        btn.innerText = hora;
+                        btn.onclick = () => seleccionarHora(btn, hora, fecha);
+                    }
+                    container.appendChild(btn);
+                });
+            });
+
+            if (slotsTotal === 0) container.innerHTML = `<div class="col-span-3 text-center text-sm">No hay horarios.</div>`;
+        }
+
+        function generarIntervalos(start, end, minutes) {
+            const result = [];
+            let current = new Date(`2000-01-01T${start}`);
+            const endTime = new Date(`2000-01-01T${end}`);
+            while (current < endTime) {
+                const h = current.getHours().toString().padStart(2, '0');
+                const m = current.getMinutes().toString().padStart(2, '0');
+                result.push(`${h}:${m}`);
+                current.setMinutes(current.getMinutes() + minutes);
+            }
+            return result;
+        }
+
+        function seleccionarHora(btn, hora, fecha) {
+            localStorage.setItem('turno_seleccionado', hora);
+            localStorage.setItem('fecha_seleccionada', fecha);
+            
+            document.querySelectorAll('.time-btn').forEach(b => b.className = "time-btn py-3 px-2 rounded-xl border border-gray-200 font-bold hover:border-primary hover:text-primary bg-white text-gray-800 text-sm shadow-sm");
+            btn.className = "time-btn py-3 px-2 rounded-xl border-2 border-primary bg-green-50 text-black font-bold shadow-md scale-105 text-sm";
+            
+            actualizarResumen(hora);
+            
+            const btnCont = document.getElementById('btn-continuar');
+            btnCont.disabled = false;
+            btnCont.className = "bg-primary hover:bg-green-400 text-black px-6 py-3 rounded-full font-bold shadow-lg transition-all transform active:scale-95";
+        }
+
+        function actualizarResumen(hora) {
+            const srv = servicioSeleccionado ? servicioSeleccionado.name : "...";
+            const precio = servicioSeleccionado && servicioSeleccionado.price ? ` ($${servicioSeleccionado.price})` : "";
+            document.getElementById('seleccion-texto').innerText = `${srv}${precio} - ${hora}`;
+        }
+    </script>
+</body>
+</html>
