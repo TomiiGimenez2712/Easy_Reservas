@@ -2,6 +2,7 @@
 <html class="light" lang="es">
 <head>
     <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <title>Easy Reservas - Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,106 +14,97 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>body { -webkit-tap-highlight-color: transparent; }</style>
 </head>
 <body class="bg-[#f8fafc] font-display h-screen flex flex-col overflow-hidden text-slate-800">
     
-    <header class="bg-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center shadow-sm shrink-0 border-b border-gray-100 gap-4 z-10">
+    <header class="bg-white px-4 py-3 flex flex-col sm:flex-row justify-between items-center shadow-sm shrink-0 border-b border-gray-100 gap-3 z-10">
         <div class="flex items-center gap-3 w-full sm:w-auto">
-             <div class="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center text-green-600 shadow-sm">
-                <span class="material-symbols-outlined text-2xl">calendar_month</span>
+             <div class="h-9 w-9 bg-primary/20 rounded-xl flex items-center justify-center text-green-600 shadow-sm shrink-0">
+                <span class="material-symbols-outlined text-xl">calendar_month</span>
             </div>
-            <div>
-                <h2 class="text-xl font-extrabold tracking-tight text-gray-900">Agenda</h2>
-                <p id="business-title" class="text-xs font-bold text-gray-400 uppercase tracking-wider">Cargando...</p>
+            <div class="truncate">
+                <h2 class="text-lg font-extrabold tracking-tight text-gray-900 leading-tight">Agenda</h2>
+                <p id="business-title" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">Cargando...</p>
             </div>
         </div>
         
-        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-            <button onclick="abrirModalBloqueo()" class="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2.5 rounded-full font-bold text-sm hover:bg-red-100 transition-all border border-red-100 shadow-sm">
-                <span class="material-symbols-outlined text-lg">block</span> 
-                <span class="hidden sm:inline">Bloquear</span>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <button onclick="abrirModalBloqueo()" class="flex-1 sm:flex-none flex items-center justify-center gap-1 text-red-600 bg-red-50 px-3 py-2 rounded-xl font-bold text-xs hover:bg-red-100 transition-all border border-red-100">
+                <span class="material-symbols-outlined text-base">block</span> Bloquear
             </button>
 
-            <div class="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
-
-            <a href="configuracion.html" class="h-10 w-10 flex items-center justify-center text-gray-500 bg-white border border-gray-200 rounded-full hover:bg-gray-50 hover:text-black transition-all shadow-sm" title="Configuración">
-                <span class="material-symbols-outlined">settings</span>
-            </a>
-            
-            <button onclick="copiarLink()" class="h-10 w-10 flex items-center justify-center text-blue-600 bg-white border border-blue-100 rounded-full hover:bg-blue-50 transition-all shadow-sm" title="Copiar Link">
-                <span class="material-symbols-outlined">share</span>
-            </button>
-            
-            <button id="logout-btn" class="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all" title="Salir">
-                <span class="material-symbols-outlined">logout</span>
-            </button>
+            <div class="flex gap-2">
+                <a href="configuracion.html" class="h-9 w-9 flex items-center justify-center text-gray-500 bg-white border border-gray-200 rounded-full active:bg-gray-50 shadow-sm">
+                    <span class="material-symbols-outlined text-lg">settings</span>
+                </a>
+                
+                <button onclick="copiarLink()" class="h-9 w-9 flex items-center justify-center text-blue-600 bg-white border border-blue-100 rounded-full active:bg-blue-50 shadow-sm">
+                    <span class="material-symbols-outlined text-lg">share</span>
+                </button>
+                
+                <button id="logout-btn" class="h-9 w-9 flex items-center justify-center text-gray-400 hover:text-red-500 rounded-full">
+                    <span class="material-symbols-outlined text-lg">logout</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
-        <div id="bookings-list" class="flex flex-col gap-4 max-w-3xl mx-auto pb-20">
+    <main class="flex-1 p-3 sm:p-6 overflow-y-auto pb-24">
+        <div id="bookings-list" class="flex flex-col gap-3 max-w-3xl mx-auto">
             <div class="flex flex-col items-center justify-center mt-20 gap-4 opacity-50 animate-pulse">
                 <span class="material-symbols-outlined text-4xl">refresh</span>
-                <p class="font-medium">Cargando tu agenda...</p>
+                <p class="font-medium text-sm">Cargando agenda...</p>
             </div>
         </div>
     </main>
 
-    <div id="modal-bloqueo" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 transform transition-all scale-100">
+    <div id="modal-bloqueo" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 transform transition-all animate-slide-up sm:animate-none flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-red-500">lock_clock</span> Bloquear Rango
+                <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-500">lock_clock</span> Bloquear Hora
                 </h3>
-                <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600">
-                    <span class="material-symbols-outlined">close</span>
+                <button onclick="cerrarModal()" class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                    <span class="material-symbols-outlined text-lg">close</span>
                 </button>
             </div>
             
-            <form id="form-bloqueo" class="flex flex-col gap-5">
+            <form id="form-bloqueo" class="flex flex-col gap-4 overflow-y-auto px-1 pb-4">
                 <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Fecha a bloquear</label>
-                    <input type="date" id="block-date" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-red-500 focus:border-red-500 bg-gray-50" required onchange="cargarHorariosBloqueo()">
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Fecha</label>
+                    <input type="date" id="block-date" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-red-500 focus:border-red-500 bg-gray-50 text-base" required onchange="cargarHorariosBloqueo()">
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-xs font-bold text-gray-500 uppercase ml-1">Desde</label>
                         <div class="relative">
-                            <select id="block-start" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-red-500 focus:border-red-500 bg-white appearance-none pl-3 pr-8 text-sm" required disabled>
+                            <select id="block-start" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-red-500 bg-white text-sm pl-3 pr-8" required disabled>
                                 <option value="">...</option>
                             </select>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none mt-1">
-                                <span class="material-symbols-outlined text-sm">expand_more</span>
-                            </div>
                         </div>
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hasta (inclusive)</label>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hasta</label>
                         <div class="relative">
-                            <select id="block-end" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-red-500 focus:border-red-500 bg-white appearance-none pl-3 pr-8 text-sm" required disabled>
+                            <select id="block-end" class="w-full mt-1 border-gray-200 rounded-xl font-bold text-gray-700 h-12 focus:ring-red-500 bg-white text-sm pl-3 pr-8" required disabled>
                                 <option value="">...</option>
                             </select>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none mt-1">
-                                <span class="material-symbols-outlined text-sm">expand_more</span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <p id="msg-bloqueo" class="text-xs text-red-500 font-medium hidden text-center bg-red-50 p-2 rounded-lg"></p>
 
-                <div class="pt-2">
-                    <button type="submit" id="btn-confirmar-bloqueo" class="w-full bg-red-500 text-white font-bold py-3 rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/30 flex items-center justify-center gap-2" disabled>
-                        Confirmar Bloqueo
-                    </button>
-                </div>
+                <button type="submit" id="btn-confirmar-bloqueo" class="w-full bg-red-500 text-white font-bold h-12 rounded-xl hover:bg-red-600 shadow-lg shadow-red-500/30 disabled:opacity-50 mt-2">
+                    Confirmar Bloqueo
+                </button>
             </form>
         </div>
     </div>
 
     <script>
-        // TUS CLAVES
         const supabaseClient = window.supabase.createClient(
             'https://qeuiiwswouxgfnmjfqyq.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFldWlpd3N3b3V4Z2ZubWpmcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzI0NDQsImV4cCI6MjA4MTQwODQ0NH0.rjhBWx61XtA-hMxzFLnOaKr9ybQk3Zbj5hnU0jxXhpw'
@@ -121,8 +113,10 @@
         const rawEmail = localStorage.getItem('user_email');
         const userEmail = rawEmail ? rawEmail.toLowerCase() : null;
         const list = document.getElementById('bookings-list');
-        let nombreNegocioGlobal = "Mi Negocio";
-        let duracionTurnoGlobal = 30; // Valor por defecto
+        
+        // VARIABLE GLOBAL NUEVA PARA EL WHATSAPP
+        let nombreNegocioGlobal = "nuestro local"; 
+        let duracionTurnoGlobal = 30;
 
         if (!userEmail) window.location.href = 'login.html';
         else {
@@ -130,191 +124,108 @@
             cargarTurnos(userEmail);
         }
 
-        // --- FUNCIONES AUXILIARES PARA AGRUPAR ---
         function timeToMinutes(timeStr) {
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
         }
-
         function minutesToTime(minutes) {
             const h = Math.floor(minutes / 60).toString().padStart(2, '0');
             const m = (minutes % 60).toString().padStart(2, '0');
             return `${h}:${m}`;
         }
 
-        // --- CARGAR TURNOS Y AGRUPAR ---
         async function cargarTurnos(email) {
             const hoy = new Date().toLocaleDateString('en-CA'); 
-            
-            // 1. Obtener configuración (para saber duración y agrupar bien)
             const { data: config } = await supabaseClient.from('business_settings').select('slot_duration').eq('email', email).single();
             if (config) duracionTurnoGlobal = config.slot_duration || 30;
 
-            // 2. Obtener Turnos
-            const { data: bookings, error } = await supabaseClient
-                .from('bookings')
-                .select('*')
-                .eq('business_email', email)
-                .gte('booking_date', hoy)
-                .order('booking_date', { ascending: true })
-                .order('booking_time', { ascending: true });
+            const { data: bookings, error } = await supabaseClient.from('bookings').select('*').eq('business_email', email).gte('booking_date', hoy).order('booking_date', { ascending: true }).order('booking_time', { ascending: true });
 
-            if (error) return console.error(error);
-
-            if (!bookings || bookings.length === 0) {
-                list.innerHTML = `<div class="flex flex-col items-center justify-center mt-20 gap-4 text-gray-400"><div class="h-24 w-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100"><span class="material-symbols-outlined text-4xl text-gray-300">event_available</span></div><h3 class="text-lg font-bold text-gray-500">Agenda libre</h3></div>`;
+            if (error || !bookings || bookings.length === 0) {
+                list.innerHTML = `<div class="flex flex-col items-center justify-center mt-20 gap-4 text-gray-400"><span class="material-symbols-outlined text-4xl text-gray-300">event_available</span><h3 class="text-sm font-bold text-gray-500">Agenda libre</h3></div>`;
                 return;
             }
 
-            // 3. LOGICA DE AGRUPACIÓN INTELIGENTE
             const agrupados = [];
             let bloqueActual = null;
 
             bookings.forEach((b) => {
                 if (b.status === 'bloqueado') {
-                    // Verificar si es consecutivo al bloque actual
-                    if (bloqueActual) {
-                        const tiempoAnterior = timeToMinutes(bloqueActual.lastTime);
-                        const tiempoActual = timeToMinutes(b.booking_time);
-                        
-                        // Si es la misma fecha y el tiempo es consecutivo (diferencia == duracionTurnoGlobal)
-                        if (b.booking_date === bloqueActual.date && (tiempoActual - tiempoAnterior === duracionTurnoGlobal)) {
-                            bloqueActual.ids.push(b.id);
-                            bloqueActual.lastTime = b.booking_time; 
-                            bloqueActual.endTimeDisplay = minutesToTime(tiempoActual + duracionTurnoGlobal); // Fin visual
-                        } else {
-                            // No es consecutivo, cerramos el anterior
-                            agrupados.push(bloqueActual);
-                            bloqueActual = crearNuevoBloque(b);
-                        }
+                    if (bloqueActual && b.booking_date === bloqueActual.date && (timeToMinutes(b.booking_time) - timeToMinutes(bloqueActual.lastTime) === duracionTurnoGlobal)) {
+                        bloqueActual.ids.push(b.id);
+                        bloqueActual.lastTime = b.booking_time; 
+                        bloqueActual.endTimeDisplay = minutesToTime(timeToMinutes(b.booking_time) + duracionTurnoGlobal);
                     } else {
-                        bloqueActual = crearNuevoBloque(b);
+                        if(bloqueActual) agrupados.push(bloqueActual);
+                        bloqueActual = { type: 'group', ids: [b.id], date: b.booking_date, startTime: b.booking_time, lastTime: b.booking_time, endTimeDisplay: minutesToTime(timeToMinutes(b.booking_time) + duracionTurnoGlobal) };
                     }
                 } else {
-                    // Si viene un turno normal, cerramos bloque pendiente
-                    if (bloqueActual) {
-                        agrupados.push(bloqueActual);
-                        bloqueActual = null;
-                    }
+                    if (bloqueActual) { agrupados.push(bloqueActual); bloqueActual = null; }
                     agrupados.push(b);
                 }
             });
             if (bloqueActual) agrupados.push(bloqueActual);
-
             renderizarLista(agrupados);
-        }
-
-        function crearNuevoBloque(b) {
-            return {
-                type: 'group',
-                ids: [b.id],
-                date: b.booking_date,
-                startTime: b.booking_time,
-                lastTime: b.booking_time,
-                endTimeDisplay: minutesToTime(timeToMinutes(b.booking_time) + duracionTurnoGlobal),
-                status: 'bloqueado'
-            };
         }
 
         function renderizarLista(items) {
             list.innerHTML = items.map(item => {
-                // CASO 1: GRUPO BLOQUEADO
                 if (item.type === 'group') {
-                    const idsStr = JSON.stringify(item.ids);
                     return `
-                    <div class="relative flex flex-col sm:flex-row gap-4 p-5 rounded-2xl shadow-sm border border-l-4 border-l-red-500 bg-red-50/30 border-red-100 transition-all hover:shadow-md items-center">
-                        <div class="flex items-center gap-4 min-w-[100px]">
-                            <div class="flex flex-col items-center bg-white p-2.5 rounded-xl border border-red-100 min-w-[70px]">
-                                <span class="material-symbols-outlined text-red-400 text-2xl">lock</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fecha</span>
-                                <span class="text-sm font-bold text-gray-600">${item.date.split('-').reverse().join('/')}</span>
-                            </div>
+                    <div class="flex flex-row gap-3 p-4 rounded-2xl border border-l-4 border-l-red-500 bg-red-50/40 border-red-100 items-center">
+                        <div class="flex flex-col items-center min-w-[50px]">
+                            <span class="material-symbols-outlined text-red-400">lock</span>
                         </div>
-                        <div class="flex-1 w-full pl-0 sm:pl-4 sm:border-l sm:border-red-100">
-                            <h3 class="font-bold text-lg text-red-600">Horario Bloqueado</h3>
-                            <p class="text-sm font-medium text-gray-500">
-                                De <span class="font-bold text-gray-800">${item.startTime.slice(0,5)}</span> a <span class="font-bold text-gray-800">${item.endTimeDisplay}</span>
-                            </p>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-sm text-red-600">Bloqueado</h3>
+                            <p class="text-xs text-gray-500">${item.date.split('-').reverse().slice(0,2).join('/')} • ${item.startTime.slice(0,5)} - ${item.endTimeDisplay}</p>
                         </div>
-                        <div class="flex items-center gap-2 justify-end w-full sm:w-auto">
-                            <button onclick='eliminarGrupo(${idsStr})' class="h-10 px-4 flex items-center gap-2 justify-center rounded-full bg-white text-red-500 border border-gray-200 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-sm text-sm font-bold">
-                                <span class="material-symbols-outlined text-lg">delete</span> Liberar Todo
-                            </button>
-                        </div>
+                        <button onclick='eliminarGrupo(${JSON.stringify(item.ids)})' class="h-9 w-9 flex items-center justify-center rounded-lg bg-white text-red-500 border border-gray-200 shadow-sm"><span class="material-symbols-outlined text-lg">delete</span></button>
                     </div>`;
                 }
-
-                // CASO 2: RESERVA NORMAL (Con Servicio)
                 const b = item;
                 const esPendiente = b.status === 'pendiente';
-                const bordeClass = esPendiente ? 'border-l-yellow-400' : 'border-l-green-500';
+                const color = esPendiente ? 'yellow' : 'green';
                 const phoneClean = b.client_phone.replace(/\D/g,''); 
-                const wppLink = `https://wa.me/${phoneClean}?text=${encodeURIComponent(`Hola ${b.client_name}, confirmo tu turno...`)}`;
+                
+                // --- NUEVO MENSAJE PERSONALIZADO ---
+                const nombreCliente = b.client_name;
+                const nombreServicio = b.service_name || 'tu servicio';
+                const fechaTurno = b.booking_date.split('-').reverse().join('/');
+                const horaTurno = b.booking_time.slice(0,5);
+                
+                // Aquí se construye el mensaje exacto que pediste
+                const textoMensaje = `Hola ${nombreCliente}, por favor confirma tu reserva para ${nombreServicio} en ${nombreNegocioGlobal} el día ${fechaTurno} a las ${horaTurno} hs.`;
+                
+                const wppLink = `https://wa.me/${phoneClean}?text=${encodeURIComponent(textoMensaje)}`;
+                // -----------------------------------
 
                 return `
-                <div class="relative flex flex-col sm:flex-row gap-4 p-5 rounded-2xl shadow-sm border border-l-4 ${bordeClass} bg-white border-gray-100 transition-all hover:shadow-md items-center">
-                    <div class="flex items-center gap-4 min-w-[100px]">
-                        <div class="flex flex-col items-center bg-gray-50 p-2.5 rounded-xl border border-gray-200 min-w-[70px]">
-                            <span class="text-xl font-black text-gray-800 tracking-tight">${b.booking_time.slice(0, 5)}</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fecha</span>
-                            <span class="text-sm font-bold text-gray-600">${b.booking_date.split('-').reverse().join('/')}</span>
-                        </div>
+                <div class="flex flex-row gap-3 p-4 rounded-2xl border border-l-4 border-l-${color}-500 bg-white border-gray-100 shadow-sm items-center">
+                    <div class="flex flex-col items-center min-w-[50px]">
+                        <span class="text-lg font-black text-gray-800">${b.booking_time.slice(0, 5)}</span>
+                        <span class="text-[10px] font-bold text-gray-400">${b.booking_date.split('-').reverse().slice(0,2).join('/')}</span>
                     </div>
-                    <div class="flex-1 w-full pl-0 sm:pl-4 sm:border-l sm:border-gray-100">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900">${b.client_name}</h3>
-                                
-                                <div class="flex flex-wrap gap-2 mt-1">
-                                    <span class="text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100">
-                                        ${b.service_name || 'Servicio General'}
-                                    </span>
-                                </div>
-
-                                <p class="text-sm font-medium text-gray-500 flex items-center gap-1 mt-1">
-                                    <span class="material-symbols-outlined text-[16px]">smartphone</span> ${b.client_phone}
-                                </p>
-                            </div>
-                            
-                            <span class="${esPendiente ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'} px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${esPendiente ? 'border-yellow-200' : 'border-green-200'}">
-                                ${b.status}
-                            </span>
-                        </div>
+                    <div class="flex-1 overflow-hidden">
+                        <h3 class="font-bold text-sm text-gray-900 truncate">${b.client_name}</h3>
+                        <p class="text-xs text-gray-500 truncate">${b.service_name || 'General'}</p>
                     </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0 justify-end border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0">
-                        <a href="${wppLink}" target="_blank" class="h-10 w-10 flex items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 hover:scale-105 transition-all shadow-sm"><span class="material-symbols-outlined text-xl">chat</span></a>
-                        ${esPendiente ? `<button onclick="confirmar(${b.id})" class="h-10 w-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 hover:scale-105 transition-all shadow-sm"><span class="material-symbols-outlined text-xl font-bold">check</span></button>` : ''}
-                        <button onclick="eliminar(${b.id})" class="h-10 w-10 flex items-center justify-center rounded-full bg-white text-red-500 border border-gray-200 hover:bg-red-50 hover:border-red-200 hover:scale-105 transition-all shadow-sm"><span class="material-symbols-outlined text-xl">delete</span></button>
+                    <div class="flex items-center gap-2">
+                        <a href="${wppLink}" target="_blank" class="h-9 w-9 flex items-center justify-center rounded-full bg-green-500 text-white shadow-sm"><span class="material-symbols-outlined text-lg">chat</span></a>
+                        ${esPendiente ? `<button onclick="confirmar(${b.id})" class="h-9 w-9 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 border border-blue-100"><span class="material-symbols-outlined text-lg">check</span></button>` : ''}
+                        <button onclick="eliminar(${b.id})" class="h-9 w-9 flex items-center justify-center rounded-full bg-gray-50 text-red-400 border border-gray-100"><span class="material-symbols-outlined text-lg">delete</span></button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // ACCIONES
-        window.confirmar = async (id) => { 
-            if(confirm("¿Confirmar este turno?")) { await supabaseClient.from('bookings').update({ status: 'confirmado' }).eq('id', id); cargarTurnos(userEmail); }
-        };
-        window.eliminar = async (id) => { 
-            if(confirm("¿Eliminar?")) { await supabaseClient.from('bookings').delete().eq('id', id); cargarTurnos(userEmail); }
-        };
-        window.eliminarGrupo = async (ids) => {
-            if(confirm(`¿Liberar este rango de ${ids.length} turnos?`)) {
-                const { error } = await supabaseClient.from('bookings').delete().in('id', ids);
-                if(error) alert("Error: " + error.message);
-                else cargarTurnos(userEmail);
-            }
-        };
+        window.confirmar = async (id) => { if(confirm("¿Confirmar?")) { await supabaseClient.from('bookings').update({ status: 'confirmado' }).eq('id', id); cargarTurnos(userEmail); }};
+        window.eliminar = async (id) => { if(confirm("¿Eliminar?")) { await supabaseClient.from('bookings').delete().eq('id', id); cargarTurnos(userEmail); }};
+        window.eliminarGrupo = async (ids) => { if(confirm("¿Liberar rango?")) { await supabaseClient.from('bookings').delete().in('id', ids); cargarTurnos(userEmail); }};
 
-        // --- LÓGICA MODAL ---
         function abrirModalBloqueo() {
-            const hoy = new Date().toISOString().split('T')[0];
-            const dateInput = document.getElementById('block-date');
-            dateInput.value = hoy;
-            dateInput.min = hoy;
+            const hoy = new Date().toLocaleDateString('en-CA');
+            document.getElementById('block-date').value = hoy;
             document.getElementById('modal-bloqueo').classList.remove('hidden');
             cargarHorariosBloqueo(); 
         }
@@ -324,95 +235,68 @@
             const fecha = document.getElementById('block-date').value;
             const selectStart = document.getElementById('block-start');
             const selectEnd = document.getElementById('block-end');
-            const msg = document.getElementById('msg-bloqueo');
             const btn = document.getElementById('btn-confirmar-bloqueo');
-
-            selectStart.innerHTML = "<option>Cargando...</option>"; selectEnd.innerHTML = "<option>...</option>";
-            selectStart.disabled = true; selectEnd.disabled = true; btn.disabled = true; msg.classList.add('hidden');
+            
+            selectStart.innerHTML = "<option>...</option>"; selectStart.disabled = true; selectEnd.disabled = true; btn.disabled = true;
 
             const { data: config } = await supabaseClient.from('business_settings').select('*').eq('email', userEmail).single();
-            duracionTurnoGlobal = config?.slot_duration || 30;
-            const shifts = config?.shifts || [{start: "09:00", end: "18:00"}];
             const workDays = config?.work_days || [1,2,3,4,5,6];
-
-            const diaSemana = new Date(fecha + "T00:00:00").getDay();
-            if (!workDays.includes(diaSemana)) { msg.innerText = "Cerrado este día."; msg.classList.remove('hidden'); return; }
+            
+            const parts = fecha.split('-');
+            const dateObj = new Date(parts[0], parts[1]-1, parts[2]);
+            if (!workDays.includes(dateObj.getDay())) { alert("Día no laboral"); return; }
 
             const { data: reservas } = await supabaseClient.from('bookings').select('booking_time').eq('business_email', userEmail).eq('booking_date', fecha);
             const ocupados = reservas ? reservas.map(r => r.booking_time.slice(0,5)) : [];
+            const shifts = config?.shifts || [{start: "09:00", end: "18:00"}];
 
-            let opciones = "<option value=''>...</option>";
-            let count = 0;
+            let opciones = "";
             shifts.forEach(shift => {
-                const slots = generarIntervalos(shift.start, shift.end, duracionTurnoGlobal);
-                slots.forEach(hora => {
+                let current = new Date(`2000-01-01T${shift.start}`);
+                const endTime = new Date(`2000-01-01T${shift.end}`);
+                while (current < endTime) {
+                    const h = current.getHours().toString().padStart(2, '0');
+                    const m = current.getMinutes().toString().padStart(2, '0');
+                    const hora = `${h}:${m}`;
                     opciones += `<option value="${hora}">${hora} ${ocupados.includes(hora) ? '(X)' : ''}</option>`;
-                    count++;
-                });
+                    current.setMinutes(current.getMinutes() + (config.slot_duration || 30));
+                }
             });
-
-            if (count === 0) { msg.innerText = "No hay horarios."; msg.classList.remove('hidden'); } 
-            else {
-                selectStart.innerHTML = opciones; selectEnd.innerHTML = opciones;
-                selectStart.disabled = false; selectEnd.disabled = false; btn.disabled = false;
-            }
-        }
-
-        function generarIntervalos(start, end, minutes) {
-            const result = [];
-            let current = new Date(`2000-01-01T${start}`);
-            const endTime = new Date(`2000-01-01T${end}`);
-            while (current < endTime) {
-                const h = current.getHours().toString().padStart(2, '0');
-                const m = current.getMinutes().toString().padStart(2, '0');
-                result.push(`${h}:${m}`);
-                current.setMinutes(current.getMinutes() + minutes);
-            }
-            return result;
+            selectStart.innerHTML = opciones; selectEnd.innerHTML = opciones;
+            selectStart.disabled = false; selectEnd.disabled = false; btn.disabled = false;
         }
 
         document.getElementById('form-bloqueo').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const fecha = document.getElementById('block-date').value;
             const start = document.getElementById('block-start').value;
             const end = document.getElementById('block-end').value;
-            
-            if(!start || !end) return alert("Selecciona inicio y fin.");
-            if(start >= end) return alert("La hora final debe ser mayor a la inicial.");
+            const date = document.getElementById('block-date').value;
+            if(start >= end) return alert("Hora fin debe ser mayor a inicio");
 
-            const btn = document.getElementById('btn-confirmar-bloqueo');
-            btn.innerText = "Procesando..."; btn.disabled = true;
-
-            const turnosABloquear = [];
+            const turnos = [];
             let current = new Date(`2000-01-01T${start}`);
             const endTime = new Date(`2000-01-01T${end}`);
-            
             while (current < endTime) {
                 const h = current.getHours().toString().padStart(2, '0');
                 const m = current.getMinutes().toString().padStart(2, '0');
-                const timeStr = `${h}:${m}`;
-                turnosABloquear.push({ business_email: userEmail, client_name: "⛔ BLOQUEADO", client_phone: "-", booking_date: fecha, booking_time: timeStr, status: "bloqueado", service_name: "No disponible" });
+                turnos.push({ business_email: userEmail, client_name: "⛔ BLOQUEADO", client_phone: "-", booking_date: date, booking_time: `${h}:${m}`, status: "bloqueado", service_name: "No disponible" });
                 current.setMinutes(current.getMinutes() + duracionTurnoGlobal);
             }
-
-            const { error } = await supabaseClient.from('bookings').insert(turnosABloquear);
-            if (error) alert("Error: " + error.message);
-            else { cerrarModal(); cargarTurnos(userEmail); }
-            btn.innerText = "Confirmar Bloqueo"; btn.disabled = false;
+            await supabaseClient.from('bookings').insert(turnos);
+            cerrarModal(); cargarTurnos(userEmail);
         });
 
-        // --- AUXILIARES ---
         async function cargarNombreNegocio(email) {
             const { data } = await supabaseClient.from('business_settings').select('business_name').eq('email', email).single();
-            if(data?.business_name) { document.getElementById('business-title').innerText = data.business_name; nombreNegocioGlobal = data.business_name; }
-            else document.getElementById('business-title').innerText = email;
+            if(data?.business_name) {
+                document.getElementById('business-title').innerText = data.business_name;
+                // Guardamos el nombre en la variable global para usarlo en el mensaje
+                nombreNegocioGlobal = data.business_name;
+            }
         }
         function copiarLink() {
-            const urlBase = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-            
-            const link = `${urlBase}/seleccion_turno.html?negocio=${userEmail}`;
-            
-            navigator.clipboard.writeText(link).then(() => alert("✅ Link copiado!\n\n" + link));
+            const link = `${window.location.href.substring(0, window.location.href.lastIndexOf('/'))}/seleccion_turno.html?negocio=${userEmail}`;
+            navigator.clipboard.writeText(link).then(() => alert("Link copiado"));
         }
         document.getElementById('logout-btn').addEventListener('click', () => { localStorage.removeItem('user_email'); window.location.href = 'login.html'; });
     </script>

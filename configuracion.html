@@ -2,7 +2,8 @@
 <html class="light" lang="es">
 <head>
     <meta charset="utf-8"/>
-    <title>Configuración - Easy Reservas</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Configuración</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -10,171 +11,120 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style> body { -webkit-tap-highlight-color: transparent; } </style>
 </head>
-<body class="bg-background-light font-display min-h-screen flex items-center justify-center p-4">
+<body class="bg-background-light font-display min-h-screen p-4 pb-24">
     
-    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        <div class="bg-white border-b border-gray-100 p-6 flex items-center gap-4">
-            <a href="dashboard.html" class="h-10 w-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500">
+    <div class="w-full max-w-2xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white border-b border-gray-100 p-4 flex items-center gap-3 sticky top-0 z-20">
+            <a href="dashboard.html" class="h-10 w-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-600">
                 <span class="material-symbols-outlined">arrow_back</span>
             </a>
-            <div>
-                <h1 class="text-xl font-extrabold text-gray-900">Configuración</h1>
-                <p class="text-sm text-gray-500">Define tus servicios y horarios.</p>
-            </div>
+            <h1 class="text-lg font-extrabold text-gray-900">Configuración</h1>
         </div>
 
-        <form id="config-form" class="p-6 md:p-8 flex flex-col gap-8">
+        <form id="config-form" class="p-5 flex flex-col gap-6">
             
             <div>
-                <label class="flex items-center gap-2 text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
-                    <span class="material-symbols-outlined text-primary text-lg">payments</span> Tus Servicios
-                </label>
+                <label class="text-xs font-bold text-gray-800 uppercase mb-2 block">Tus Servicios</label>
                 <div id="services-list" class="flex flex-col gap-2 mb-3"></div>
                 <div class="flex gap-2">
-                    <input id="new-service-name" type="text" placeholder="Nombre (ej: Corte)" class="flex-grow border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-primary focus:border-primary text-sm font-medium">
-                    <input id="new-service-price" type="number" placeholder="$" class="w-24 border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-primary focus:border-primary text-sm font-medium">
-                    <button type="button" onclick="agregarServicioUI()" class="bg-black text-white w-12 rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center justify-center text-xl">+</button>
+                    <input id="new-service-name" type="text" placeholder="Nombre" class="flex-grow border-gray-200 bg-gray-50 rounded-xl h-12 px-4 focus:ring-primary focus:border-primary text-sm font-medium">
+                    <input id="new-service-price" type="number" placeholder="$" class="w-20 border-gray-200 bg-gray-50 rounded-xl h-12 px-2 text-center focus:ring-primary text-sm font-medium">
+                    <button type="button" onclick="agregarServicioUI()" class="bg-black text-white w-12 h-12 rounded-xl font-bold flex items-center justify-center text-xl shadow-lg">+</button>
                 </div>
             </div>
 
             <hr class="border-gray-100">
 
             <div>
-                <label class="flex items-center gap-2 text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
-                    <span class="material-symbols-outlined text-primary text-lg">schedule</span> Duración del turno
-                </label>
+                <label class="text-xs font-bold text-gray-800 uppercase mb-2 block">Duración Turno</label>
                 <div class="relative">
-                    <select id="slot-duration" class="w-full border-gray-200 bg-gray-50 rounded-xl h-14 pl-4 pr-10 font-bold text-gray-700 appearance-none cursor-pointer focus:ring-primary focus:border-primary">
-                        <option value="15">15 minutos</option>
-                        <option value="20">20 minutos</option>
-                        <option value="30" selected>30 minutos (Estándar)</option>
-                        <option value="40">40 minutos</option>
-                        <option value="45">45 minutos</option>
-                        <option value="60">60 minutos</option>
-                        <option value="90">90 minutos</option>
+                    <select id="slot-duration" class="w-full border-gray-200 bg-gray-50 rounded-xl h-12 pl-4 font-bold text-gray-700 text-sm focus:ring-primary">
+                        <option value="15">15 min</option>
+                        <option value="20">20 min</option>
+                        <option value="30" selected>30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60">60 min</option>
                     </select>
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                        <span class="material-symbols-outlined">expand_more</span>
-                    </div>
                 </div>
             </div>
 
             <hr class="border-gray-100">
 
             <div>
-                <div class="flex justify-between items-center mb-3">
-                    <label class="flex items-center gap-2 text-sm font-bold text-gray-800 uppercase tracking-wide">
-                        <span class="material-symbols-outlined text-primary text-lg">storefront</span> Horarios
-                    </label>
-                    <button type="button" onclick="agregarRango()" class="text-xs font-bold bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 transition-colors flex items-center gap-1 border border-green-200">
-                        <span class="material-symbols-outlined text-sm">add</span> Agregar
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-xs font-bold text-gray-800 uppercase">Horarios</label>
+                    <button type="button" onclick="agregarRango()" class="text-[10px] font-bold bg-green-50 text-green-700 px-3 py-1.5 rounded-lg border border-green-200">
+                        + AGREGAR
                     </button>
                 </div>
-                <div id="shifts-container" class="flex flex-col gap-3"></div>
+                <div id="shifts-container" class="flex flex-col gap-2"></div>
             </div>
 
             <hr class="border-gray-100">
 
             <div>
-                <label class="flex items-center gap-2 text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">
-                    <span class="material-symbols-outlined text-primary text-lg">calendar_today</span> Días Laborables
-                </label>
-                <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="1" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-gray-200 bg-white text-gray-500 font-bold transition-all hover:bg-gray-50 peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary peer-checked:shadow-md">Lun</span>
-                    </label>
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="2" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-gray-200 bg-white text-gray-500 font-bold transition-all hover:bg-gray-50 peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary peer-checked:shadow-md">Mar</span>
-                    </label>
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="3" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-gray-200 bg-white text-gray-500 font-bold transition-all hover:bg-gray-50 peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary peer-checked:shadow-md">Mié</span>
-                    </label>
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="4" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-gray-200 bg-white text-gray-500 font-bold transition-all hover:bg-gray-50 peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary peer-checked:shadow-md">Jue</span>
-                    </label>
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="5" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-gray-200 bg-white text-gray-500 font-bold transition-all hover:bg-gray-50 peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary peer-checked:shadow-md">Vie</span>
-                    </label>
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="6" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-gray-200 bg-white text-gray-500 font-bold transition-all hover:bg-gray-50 peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary peer-checked:shadow-md">Sáb</span>
-                    </label>
-                    <label class="cursor-pointer relative">
-                        <input type="checkbox" name="days" value="0" class="peer sr-only">
-                        <span class="flex items-center justify-center w-full h-12 rounded-xl border border-red-100 bg-red-50 text-red-400 font-bold transition-all hover:bg-red-100 peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-500 peer-checked:shadow-md">Dom</span>
-                    </label>
+                <label class="text-xs font-bold text-gray-800 uppercase mb-2 block">Días Laborables</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="1" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary">Lun</span></label>
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="2" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary">Mar</span></label>
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="3" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary">Mié</span></label>
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="4" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary">Jue</span></label>
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="5" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary">Vie</span></label>
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="6" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary">Sáb</span></label>
+                    <label class="cursor-pointer relative"><input type="checkbox" name="days" value="0" class="peer sr-only"><span class="flex items-center justify-center h-10 rounded-xl border border-red-100 text-red-400 font-bold text-sm peer-checked:bg-red-500 peer-checked:text-white">Dom</span></label>
                 </div>
-            </div>
-
-            <div class="pt-4">
-                <button type="submit" id="save-btn" class="w-full bg-primary hover:bg-green-400 text-black h-14 rounded-2xl font-extrabold text-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98]">Guardar Configuración</button>
             </div>
         </form>
     </div>
 
+    <div class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 z-30">
+        <button type="submit" form="config-form" id="save-btn" class="w-full max-w-2xl mx-auto bg-primary text-black h-12 rounded-xl font-extrabold text-base shadow-lg shadow-primary/20 block">Guardar Cambios</button>
+    </div>
+
     <script>
-        // TUS CLAVES
         const supabase = window.supabase.createClient(
             'https://qeuiiwswouxgfnmjfqyq.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFldWlpd3N3b3V4Z2ZubWpmcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzI0NDQsImV4cCI6MjA4MTQwODQ0NH0.rjhBWx61XtA-hMxzFLnOaKr9ybQk3Zbj5hnU0jxXhpw'
         );
-
         const userEmail = localStorage.getItem('user_email');
         if (!userEmail) window.location.href = 'login.html';
-
         let serviciosGlobal = [];
 
         function renderServicios() {
             const container = document.getElementById('services-list');
             container.innerHTML = "";
+            // RESTAURADO: Mensaje de lista vacía
             if (serviciosGlobal.length === 0) {
                 container.innerHTML = "<p class='text-xs text-gray-400 italic text-center'>No hay servicios configurados.</p>";
             }
             serviciosGlobal.forEach((srv, index) => {
                 const div = document.createElement('div');
                 div.className = "flex justify-between items-center bg-white border border-gray-200 p-3 rounded-xl shadow-sm";
-                div.innerHTML = `
-                    <div>
-                        <p class="font-bold text-gray-800 text-sm">${srv.name}</p>
-                        <p class="text-xs text-green-600 font-bold">$${srv.price}</p>
-                    </div>
-                    <button type="button" onclick="eliminarServicio(${index})" class="h-8 w-8 flex items-center justify-center text-red-400 hover:text-red-600 bg-red-50 rounded-lg transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
-                `;
+                div.innerHTML = `<p class="font-bold text-sm">${srv.name} <span class="text-green-600">$${srv.price}</span></p><button onclick="eliminarServicio(${index})" class="text-red-400"><span class="material-symbols-outlined">delete</span></button>`;
                 container.appendChild(div);
             });
         }
-
         window.agregarServicioUI = () => {
             const name = document.getElementById('new-service-name').value;
             const price = document.getElementById('new-service-price').value;
-            if(!name) return alert("Escribe un nombre");
-            
+            if(!name) return;
             serviciosGlobal.push({ name, price });
-            document.getElementById('new-service-name').value = "";
-            document.getElementById('new-service-price').value = "";
+            document.getElementById('new-service-name').value = ""; document.getElementById('new-service-price').value = "";
             renderServicios();
         }
-
-        window.eliminarServicio = (index) => {
-            serviciosGlobal.splice(index, 1);
-            renderServicios();
-        }
+        window.eliminarServicio = (i) => { serviciosGlobal.splice(i, 1); renderServicios(); }
 
         function agregarRango(inicio = "", fin = "") {
             const container = document.getElementById('shifts-container');
             const div = document.createElement('div');
-            div.className = "flex items-center gap-2 animate-fade-in";
+            div.className = "flex items-center gap-2";
             div.innerHTML = `
-                <div class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"><span class="text-[10px] font-bold text-gray-400">DESDE</span><input type="time" class="shift-start bg-transparent border-none p-0 font-bold text-gray-800 w-full text-center focus:ring-0" value="${inicio}" required></div>
-                <span class="text-gray-300 font-bold">-</span>
-                <div class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"><span class="text-[10px] font-bold text-gray-400">HASTA</span><input type="time" class="shift-end bg-transparent border-none p-0 font-bold text-gray-800 w-full text-center focus:ring-0" value="${fin}" required></div>
-                <button type="button" onclick="this.parentElement.remove()" class="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"><span class="material-symbols-outlined">delete</span></button>
+                <input type="time" class="shift-start bg-gray-50 border border-gray-200 rounded-xl px-2 h-10 w-full text-center font-bold text-sm focus:ring-primary" value="${inicio}">
+                <span class="text-gray-300">-</span>
+                <input type="time" class="shift-end bg-gray-50 border border-gray-200 rounded-xl px-2 h-10 w-full text-center font-bold text-sm focus:ring-primary" value="${fin}">
+                <button onclick="this.parentElement.remove()" class="text-gray-400"><span class="material-symbols-outlined">delete</span></button>
             `;
             container.appendChild(div);
         }
@@ -185,19 +135,13 @@
                 if (data.slot_duration) document.getElementById('slot-duration').value = data.slot_duration;
                 serviciosGlobal = data.services || [];
                 renderServicios();
-
                 const shifts = data.shifts || [{start: "09:00", end: "18:00"}];
                 document.getElementById('shifts-container').innerHTML = ""; 
                 shifts.forEach(s => agregarRango(s.start, s.end));
-
                 document.querySelectorAll('input[name="days"]').forEach(cb => {
                     if (data.work_days && data.work_days.includes(parseInt(cb.value))) cb.checked = true;
                 });
-            } else {
-                agregarRango("09:00", "17:00");
-                serviciosGlobal = [{name: "Servicio General", price: ""}];
-                renderServicios();
-            }
+            } else { agregarRango("09:00", "17:00"); renderServicios(); }
         }
         cargar();
 
@@ -205,9 +149,6 @@
             e.preventDefault();
             const btn = document.getElementById('save-btn');
             btn.innerText = "Guardando..."; btn.disabled = true;
-
-            const duration = document.getElementById('slot-duration').value;
-            const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(cb => parseInt(cb.value));
             
             const shifts = [];
             document.querySelectorAll('#shifts-container > div').forEach(row => {
@@ -216,21 +157,15 @@
                 if(start && end) shifts.push({ start, end });
             });
 
-            if (shifts.length === 0) { alert("Agrega horario."); btn.disabled = false; return; }
-
             const settings = {
                 email: userEmail,
-                slot_duration: parseInt(duration),
-                work_days: days,
+                slot_duration: parseInt(document.getElementById('slot-duration').value),
+                work_days: Array.from(document.querySelectorAll('input[name="days"]:checked')).map(cb => parseInt(cb.value)),
                 shifts: shifts,
                 services: serviciosGlobal
             };
-
-            const { error } = await supabase.from('business_settings').upsert(settings);
-
-            if (error) alert("Error: " + error.message);
-            else { window.location.href = 'dashboard.html'; }
-            btn.innerText = "Guardar Configuración"; btn.disabled = false;
+            await supabase.from('business_settings').upsert(settings);
+            window.location.href = 'dashboard.html';
         });
     </script>
 </body>

@@ -2,86 +2,47 @@
 <html class="light" lang="es">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Confirmación de Reserva - Easy Reservas</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Confirmado</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: { extend: { colors: { "primary": "#13ec5b", "background-light": "#f6f8f6" }, fontFamily: { "display": ["Manrope", "sans-serif"] } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { "primary": "#13ec5b", "background-light": "#f6f8f6" }, fontFamily: { "display": ["Manrope", "sans-serif"] } } } }
     </script>
 </head>
-<body class="bg-background-light font-display text-gray-800 transition-colors duration-200">
-<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-<div class="mx-auto flex w-full max-w-md flex-col min-h-screen pb-10">
-    <header class="flex items-center justify-center pt-8 pb-4 px-6">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-green-700"><span class="material-symbols-outlined text-2xl">calendar_month</span></div>
-            <h2 class="text-xl font-bold tracking-tight">Easy Reservas</h2>
-        </div>
-    </header>
-    <div class="flex flex-col items-center px-6 pt-6 pb-8">
-        <div class="relative mb-6 flex items-center justify-center">
-            <div class="absolute h-24 w-24 rounded-full bg-primary/20 animate-pulse"></div>
-            <div class="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary text-black shadow-lg shadow-primary/30"><span class="material-symbols-outlined text-5xl font-bold">check</span></div>
-        </div>
-        <h1 class="text-center text-2xl font-bold leading-tight">¡Reserva Confirmada!</h1>
-        <p class="mt-2 text-center text-base font-medium text-gray-500">Tu turno ha sido agendado con éxito.</p>
+<body class="bg-background-light font-display min-h-screen flex flex-col items-center justify-center p-6 text-center">
+    
+    <div class="bg-white p-8 rounded-full shadow-lg mb-6 animate-bounce">
+        <span class="material-symbols-outlined text-6xl text-primary font-bold">check</span>
     </div>
     
-    <div class="px-6 flex-1">
-        <div class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-            <div class="flex flex-col gap-0 px-6 py-6">
-                
-                <div class="flex items-center justify-between border-b border-dashed border-gray-200 py-4">
-                    <div class="flex items-center gap-3"><span class="text-sm font-medium text-gray-500">Servicio</span></div>
-                    <span id="resumen-servicio" class="text-sm font-bold text-right">Cargando...</span>
-                </div>
-                
-                <div class="flex items-center justify-between border-b border-dashed border-gray-200 py-4">
-                    <div class="flex items-center gap-3"><span class="text-sm font-medium text-gray-500">Fecha</span></div>
-                    <span id="resumen-fecha" class="text-sm font-bold">...</span>
-                </div>
-                
-                <div class="flex items-center justify-between border-b border-dashed border-gray-200 py-4">
-                    <div class="flex items-center gap-3"><span class="text-sm font-medium text-gray-500">Hora</span></div>
-                    <span id="resumen-hora" class="text-sm font-bold bg-primary/20 px-2 py-0.5 rounded text-green-800">...</span>
-                </div>
-            </div>
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-2">¡Listo!</h1>
+    <p class="text-gray-500 mb-8 max-w-xs mx-auto">Tu turno ha sido agendado. Te esperamos.</p>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full max-w-xs mb-8">
+        <div class="flex justify-between border-b border-gray-100 pb-3 mb-3">
+            <span class="text-xs font-bold text-gray-400 uppercase">Día</span>
+            <span id="resumen-fecha" class="font-bold text-gray-800">...</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-xs font-bold text-gray-400 uppercase">Hora</span>
+            <span id="resumen-hora" class="font-bold text-gray-800 bg-green-100 px-2 rounded text-green-700">...</span>
         </div>
     </div>
 
-    <div class="mt-auto flex flex-col gap-4 px-6 pt-8">
-        <button onclick="volverAReservar()" class="group relative flex h-14 w-full cursor-pointer items-center justify-center overflow-hidden rounded-full bg-primary text-black shadow-lg shadow-primary/20 transition-transform active:scale-95">
-            <span class="text-base font-bold tracking-wide">Reservar Otro Turno</span>
-        </button>
-    </div>
-</div>
-</div>
+    <button onclick="volver()" class="bg-black text-white px-8 py-3 rounded-full font-bold shadow-xl active:scale-95 transition-transform">
+        Volver al Inicio
+    </button>
 
-<script>
-    // SCRIPT PARA LEER DATOS REALES
-    const srv = JSON.parse(localStorage.getItem('servicio_seleccionado') || '{"name": "Servicio"}');
-    const fecha = localStorage.getItem('fecha_seleccionada') || "";
-    const hora = localStorage.getItem('turno_seleccionado') || "";
-    const negocioEmail = localStorage.getItem('negocio_destino');
+    <script>
+        document.getElementById('resumen-fecha').innerText = (localStorage.getItem('fecha_seleccionada') || "").split('-').reverse().join('/');
+        document.getElementById('resumen-hora').innerText = localStorage.getItem('turno_seleccionado') || "";
+        const negocioEmail = localStorage.getItem('negocio_destino');
 
-    document.getElementById('resumen-servicio').innerText = srv.name + (srv.price ? ` ($${srv.price})` : '');
-    document.getElementById('resumen-fecha').innerText = fecha.split('-').reverse().join('/');
-    document.getElementById('resumen-hora').innerText = hora;
-
-    function volverAReservar() {
-        // Redirige al cliente al inicio del flujo DE ESE NEGOCIO
-        if (negocioEmail) {
-            window.location.href = `seleccion_turno.html?negocio=${negocioEmail}`;
-        } else {
-            window.location.href = 'seleccion_turno.html';
+        function volver() {
+            window.location.href = negocioEmail ? `seleccion_turno.html?negocio=${negocioEmail}` : 'seleccion_turno.html';
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>

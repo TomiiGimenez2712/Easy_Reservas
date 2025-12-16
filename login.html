@@ -2,90 +2,57 @@
 <html class="light" lang="es">
 <head>
     <meta charset="utf-8"/>
-    <title>Easy Reservas - Acceso</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Easy Reservas</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: { extend: { colors: { "primary": "#13ec5b", "background-light": "#f6f8f6", "background-dark": "#102216", "input-bg": "#f0f4f2" }, fontFamily: { "display": ["Manrope", "sans-serif"] } } }
-        }
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#13ec5b", "background-light": "#f6f8f6" }, fontFamily: { "display": ["Manrope", "sans-serif"] } } } }
     </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white dark:bg-[#1c2e24] rounded-xl shadow-xl p-8 border border-gray-100">
-        <h1 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Bienvenido</h1>
+<body class="bg-background-light min-h-screen flex flex-col font-display items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+        <h1 class="text-2xl font-extrabold text-center mb-6 text-gray-900">Bienvenido</h1>
         
         <div class="flex p-1 bg-gray-100 rounded-full mb-6">
-            <button id="tab-login" type="button" class="flex-1 py-2 rounded-full text-sm font-bold bg-white shadow-sm text-gray-900 transition-all" onclick="cambiarPestaña('login')">Iniciar Sesión</button>
-            <button id="tab-register" type="button" class="flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all" onclick="cambiarPestaña('register')">Registrar Negocio</button>
+            <button id="tab-login" type="button" class="flex-1 py-2 rounded-full text-xs font-bold bg-white shadow-sm text-gray-900 transition-all" onclick="cambiarPestaña('login')">Ingresar</button>
+            <button id="tab-register" type="button" class="flex-1 py-2 rounded-full text-xs font-bold text-gray-500 transition-all" onclick="cambiarPestaña('register')">Registrar</button>
         </div>
 
         <form id="auth-form" class="flex flex-col gap-4">
-            <div id="business-name-container" class="hidden animate-fade-in">
-                <input id="business-name" class="w-full h-14 px-4 bg-input-bg border-none rounded-xl focus:ring-2 focus:ring-primary placeholder-gray-500 text-gray-900" placeholder="Nombre de tu Negocio (Ej: Barbería Tomi)" type="text"/>
+            <div id="business-name-container" class="hidden">
+                <input id="business-name" class="w-full h-12 px-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary placeholder-gray-400 text-sm font-medium text-gray-900" placeholder="Nombre Negocio" type="text"/>
             </div>
-
-            <input id="email" class="w-full h-14 px-4 bg-input-bg rounded-xl border-none focus:ring-2 focus:ring-primary" placeholder="Correo electrónico" type="email" required/>
-            <input id="password" class="w-full h-14 px-4 bg-input-bg rounded-xl border-none focus:ring-2 focus:ring-primary" placeholder="Contraseña (min 6 caracteres)" type="password" required/>
+            <input id="email" class="w-full h-12 px-4 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-primary text-sm font-medium" placeholder="Correo electrónico" type="email" required/>
+            <input id="password" class="w-full h-12 px-4 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-primary text-sm font-medium" placeholder="Contraseña" type="password" required/>
             
-            <button type="submit" id="submit-btn" class="mt-2 w-full h-14 bg-primary hover:brightness-105 rounded-full text-black font-extrabold text-base transition-all">
+            <button type="submit" id="submit-btn" class="mt-2 w-full h-12 bg-primary rounded-xl text-black font-extrabold text-sm transition-all shadow-lg shadow-primary/20 active:scale-95">
                 Ingresar al Panel
             </button>
         </form>
-        
-        <div id="msg-container" class="mt-4 hidden p-4 rounded-lg text-sm font-bold text-center"></div>
+        <div id="msg-container" class="mt-4 hidden p-3 rounded-lg text-xs font-bold text-center"></div>
     </div>
-
+    
     <script>
-        // --- TUS CLAVES REALES ---
         const SUPABASE_URL = 'https://qeuiiwswouxgfnmjfqyq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFldWlpd3N3b3V4Z2ZubWpmcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzI0NDQsImV4cCI6MjA4MTQwODQ0NH0.rjhBWx61XtA-hMxzFLnOaKr9ybQk3Zbj5hnU0jxXhpw';
-        // -------------------------
-
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let modoActual = 'login'; 
 
         function cambiarPestaña(modo) {
             modoActual = modo;
-            const tabLogin = document.getElementById('tab-login');
-            const tabRegister = document.getElementById('tab-register');
-            const btn = document.getElementById('submit-btn');
-            const nameContainer = document.getElementById('business-name-container');
-            const nameInput = document.getElementById('business-name');
-            
-            mostrarMensaje("", "none"); 
-
+            document.getElementById('msg-container').className = "hidden";
             if (modo === 'login') {
-                tabLogin.className = "flex-1 py-2 rounded-full text-sm font-bold bg-white shadow-sm text-gray-900 transition-all";
-                tabRegister.className = "flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all";
-                btn.innerText = "Ingresar al Panel";
-                nameContainer.classList.add('hidden');
-                nameInput.required = false;
+                document.getElementById('tab-login').className = "flex-1 py-2 rounded-full text-xs font-bold bg-white shadow-sm text-gray-900 transition-all";
+                document.getElementById('tab-register').className = "flex-1 py-2 rounded-full text-xs font-bold text-gray-500 transition-all";
+                document.getElementById('submit-btn').innerText = "Ingresar al Panel";
+                document.getElementById('business-name-container').classList.add('hidden');
             } else {
-                tabRegister.className = "flex-1 py-2 rounded-full text-sm font-bold bg-white shadow-sm text-gray-900 transition-all";
-                tabLogin.className = "flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all";
-                btn.innerText = "Registrarme";
-                nameContainer.classList.remove('hidden');
-                nameInput.required = true;
-            }
-        }
-
-        // USO DE EMOJIS PARA EVITAR ERROR DE FUENTE
-        function mostrarMensaje(texto, tipo) {
-            const container = document.getElementById('msg-container');
-            container.className = "mt-4 p-4 rounded-lg text-sm font-bold text-center block border shadow-sm";
-            
-            if (tipo === 'error') {
-                container.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
-                container.innerHTML = `⛔ ${texto}`;
-            } else if (tipo === 'success') {
-                container.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
-                container.innerHTML = `✅ ${texto}`;
-            } else {
-                container.classList.add('hidden');
+                document.getElementById('tab-register').className = "flex-1 py-2 rounded-full text-xs font-bold bg-white shadow-sm text-gray-900 transition-all";
+                document.getElementById('tab-login').className = "flex-1 py-2 rounded-full text-xs font-bold text-gray-500 transition-all";
+                document.getElementById('submit-btn').innerText = "Registrarme";
+                document.getElementById('business-name-container').classList.remove('hidden');
             }
         }
 
@@ -95,50 +62,28 @@
             const password = document.getElementById('password').value;
             const businessName = document.getElementById('business-name').value;
             const btn = document.getElementById('submit-btn');
+            const msg = document.getElementById('msg-container');
             
-            btn.disabled = true;
-            btn.innerText = "Procesando...";
-            mostrarMensaje("", "none");
-
+            btn.disabled = true; btn.innerText = "...";
             try {
                 if (modoActual === 'register') {
-                    // REGISTRO
                     const { data, error } = await supabase.auth.signUp({ email, password });
-                    
                     if (error) throw error;
-
-                    if (data.user && data.user.identities && data.user.identities.length === 0) {
-                        throw new Error("Este correo ya está registrado. Por favor inicia sesión.");
-                    }
-
-                    // Guardar nombre
-                    const { error: dbError } = await supabase.from('business_settings').upsert({ email: email, business_name: businessName });
-                    if (dbError) console.error("Error nombre:", dbError);
-
-                    mostrarMensaje(`¡Registro exitoso!<br><br>Enviamos un correo a <strong>${email}</strong>.<br>Confírmalo para ingresar.`, "success");
-                    document.getElementById('auth-form').reset();
-
+                    if (data.user && data.user.identities && data.user.identities.length === 0) throw new Error("Correo ya registrado.");
+                    await supabase.from('business_settings').upsert({ email: email, business_name: businessName });
+                    msg.className = "mt-4 p-3 rounded-lg text-xs font-bold text-center block bg-green-50 text-green-700";
+                    msg.innerHTML = "Registro exitoso. Confirma tu correo.";
                 } else {
-                    // LOGIN
-                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                    
-                    if (error) {
-                        if (error.message.includes("Invalid login")) throw new Error("Contraseña incorrecta o usuario no encontrado.");
-                        if (error.message.includes("Email not confirmed")) throw new Error("Aún no has confirmado tu correo. Revisa tu bandeja de entrada.");
-                        throw error;
-                    }
-
-                    mostrarMensaje("Login correcto. Entrando...", "success");
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
                     localStorage.setItem('user_email', email);
                     window.location.href = 'dashboard.html';
                 }
-
             } catch (error) {
-                console.error(error);
-                mostrarMensaje(error.message, "error");
+                msg.className = "mt-4 p-3 rounded-lg text-xs font-bold text-center block bg-red-50 text-red-600";
+                msg.innerText = error.message;
             } finally {
-                btn.disabled = false;
-                btn.innerText = modoActual === 'login' ? "Ingresar al Panel" : "Registrarme";
+                btn.disabled = false; btn.innerText = modoActual === 'login' ? "Ingresar" : "Registrar";
             }
         });
     </script>
