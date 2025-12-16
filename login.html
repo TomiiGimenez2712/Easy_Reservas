@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-    <title>Easy Reservas</title>
+    <title>Easy Reservas - Acceso</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -35,8 +35,11 @@
     </div>
     
     <script>
+        // --- TUS CLAVES ---
         const SUPABASE_URL = 'https://qeuiiwswouxgfnmjfqyq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFldWlpd3N3b3V4Z2ZubWpmcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzI0NDQsImV4cCI6MjA4MTQwODQ0NH0.rjhBWx61XtA-hMxzFLnOaKr9ybQk3Zbj5hnU0jxXhpw';
+        // ------------------
+
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let modoActual = 'login'; 
 
@@ -67,21 +70,41 @@
             btn.disabled = true; btn.innerText = "...";
             try {
                 if (modoActual === 'register') {
-                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    // AQUÍ ESTÁ LA MAGIA: FORZAMOS LA URL EXACTA
+                    const { data, error } = await supabase.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            // Esta línea obliga a Supabase a usar TU link exacto con la carpeta
+                            emailRedirectTo: 'https://tomiigimenez2712.github.io/Easy_Reservas/index.html'
+                        }
+                    });
+                    
                     if (error) throw error;
                     if (data.user && data.user.identities && data.user.identities.length === 0) throw new Error("Correo ya registrado.");
+                    
+                    // Guardamos el nombre
                     await supabase.from('business_settings').upsert({ email: email, business_name: businessName });
+                    
                     msg.className = "mt-4 p-3 rounded-lg text-xs font-bold text-center block bg-green-50 text-green-700";
-                    msg.innerHTML = "Registro exitoso. Confirma tu correo.";
+                    msg.innerHTML = "Registro exitoso. Revisa tu correo (mira en SPAM).";
+                
                 } else {
+                    // LOGIN NORMAL
                     const { error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     localStorage.setItem('user_email', email);
                     window.location.href = 'dashboard.html';
                 }
+
             } catch (error) {
+                console.error(error);
+                let text = error.message;
+                if(text.includes("Email not confirmed")) text = "Confirma tu correo primero.";
+                if(text.includes("Invalid login")) text = "Datos incorrectos.";
+                
                 msg.className = "mt-4 p-3 rounded-lg text-xs font-bold text-center block bg-red-50 text-red-600";
-                msg.innerText = error.message;
+                msg.innerText = text;
             } finally {
                 btn.disabled = false; btn.innerText = modoActual === 'login' ? "Ingresar" : "Registrar";
             }
