@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -30,12 +31,17 @@
             background-image: radial-gradient(at 0% 0%, rgba(19, 236, 91, 0.15) 0px, transparent 50%),
                               radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.15) 0px, transparent 50%);
         }
-        /* Animaciones suaves */
         .fade-up { animation: fadeUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-surface font-display text-dark overflow-x-hidden antialiased">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-white z-[60] hidden flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 class="text-xl font-bold text-gray-800">Verificando tu cuenta...</h2>
+        <p class="text-gray-500">Serás redirigido en unos segundos.</p>
+    </div>
 
     <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-lg border-b border-gray-100 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -224,6 +230,36 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        const supabaseUrl = 'https://qeuiiwswouxgfnmjfqyq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFldWlpd3N3b3V4Z2ZubWpmcXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzI0NDQsImV4cCI6MjA4MTQwODQ0NH0.rjhBWx61XtA-hMxzFLnOaKr9ybQk3Zbj5hnU0jxXhpw';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Detectar si la URL tiene el "hash" de Supabase (el token de acceso)
+        if (window.location.hash.includes('access_token')) {
+            // Mostrar pantalla de carga
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+
+            // Supabase detecta el hash automáticamente y restaura la sesión
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' || session) {
+                    console.log("Usuario verificado. Redirigiendo...");
+                    
+                    // IMPORTANTE: Guardamos el email en localStorage porque tu dashboard.html lo usa
+                    if (session.user && session.user.email) {
+                        localStorage.setItem('user_email', session.user.email);
+                    }
+                    
+                    // Esperar 1 segundo para asegurar y redirigir
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>
